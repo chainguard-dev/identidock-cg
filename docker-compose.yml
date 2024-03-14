@@ -1,0 +1,17 @@
+name: identidock
+
+services:
+  frontend:
+    build: identidock
+    ports:
+     - "8000:5000"
+    environment:
+      ENV: DEV 
+    volumes:
+      - ./identidock/app:/app
+
+  dnmonster:
+    build: dnmonster
+
+  redis:
+    image: redis:7
