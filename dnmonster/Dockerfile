@@ -1,12 +1,12 @@
-FROM node
+FROM cgr.dev/chainguard/node:latest-dev
 
-# This is needed for node-canvas dependency on cairo. Annoyingly large...
-RUN apt-get update && apt-get install -yy --no-install-recommends \
-     libcairo2-dev libjpeg62-turbo-dev libpango1.0-dev libgif-dev \
-     librsvg2-dev build-essential g++
+USER root
+RUN apk update && apk add \
+     cairo-dev libjpeg-turbo-dev pango-dev giflib-dev \
+     librsvg-dev glib-dev harfbuzz-dev fribidi-dev expat-dev libxft-dev
 
 #Create non-root user
-RUN groupadd -r dnmonster && useradd -r -g dnmonster dnmonster
+RUN addgroup dnmonster && adduser -D -G dnmonster dnmonster
 RUN install -d -o dnmonster -g dnmonster /home/dnmonster
 
 RUN mkdir -p /usr/src/app
@@ -21,4 +21,4 @@ USER dnmonster
 
 EXPOSE 8080
 
-CMD [ "npm", "start" ]
+ENTRYPOINT [ "npm", "start" ]
