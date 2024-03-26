@@ -1,24 +1,28 @@
-FROM node
+FROM cgr.dev/chainguard/node:latest-dev as build
 
-# This is needed for node-canvas dependency on cairo. Annoyingly large...
-RUN apt-get update && apt-get install -yy --no-install-recommends \
-     libcairo2-dev libjpeg62-turbo-dev libpango1.0-dev libgif-dev \
-     librsvg2-dev build-essential g++
+USER root
 
-#Create non-root user
-RUN groupadd -r dnmonster && useradd -r -g dnmonster dnmonster
-RUN install -d -o dnmonster -g dnmonster /home/dnmonster
+RUN apk update && apk add \
+     tini cairo-dev libjpeg-turbo-dev pango-dev giflib-dev \
+     librsvg-dev glib-dev harfbuzz-dev fribidi-dev expat-dev libxft-dev
 
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
+ENV NODE_ENV production
 COPY package.json /usr/src/app/
 RUN npm install
 COPY ./src /usr/src/app
 
-RUN chown -R dnmonster:dnmonster /usr/src/app
-USER dnmonster
+FROM cgr.dev/chainguard/wolfi-base
+
+RUN apk update && apk add tini nodejs \
+     cairo-dev libjpeg-turbo-dev pango-dev giflib-dev \
+     librsvg-dev glib-dev harfbuzz-dev fribidi-dev expat-dev libxft-dev
+
+WORKDIR /app
+COPY --from=build /usr/src/app /app
 
 EXPOSE 8080
-
+ENTRYPOINT ["tini", "--" ]
 CMD [ "npm", "start" ]
