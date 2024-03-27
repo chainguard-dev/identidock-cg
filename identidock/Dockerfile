@@ -1,12 +1,29 @@
-FROM python
+FROM cgr.dev/chainguard/python:latest-dev as dev
 
-RUN groupadd -r uwsgi && useradd -r -g uwsgi uwsgi
-RUN pip install Flask==3.0.2 uWSGI==2.0.24 requests==2.31.0 redis==5.0.3
+ENV LANG=C.UTF-8
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+ENV PATH="/app/venv/bin:$PATH"
+
 WORKDIR /app
-USER uwsgi
+RUN python -m venv /app/venv
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
 COPY app /app
-COPY cmd.sh /
 
-EXPOSE 9090 9191
+EXPOSE 5000
 
-CMD ["/cmd.sh"]
+ENTRYPOINT ["python"]
+CMD ["identidock.py"]
+
+FROM cgr.dev/chainguard/python:latest
+
+WORKDIR /app
+ENV PYTHONUNBUFFERED=1
+ENV PATH="/app/venv/bin:$PATH"
+
+COPY app/identidock.py ./
+COPY --from=dev /app/venv /app/venv
+
+EXPOSE 9090
+ENTRYPOINT [ "gunicorn", "-b", "0.0.0.0:9090", "identidock:app" ]
