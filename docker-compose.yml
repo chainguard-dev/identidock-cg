@@ -4,14 +4,10 @@ services:
   frontend:
     build: identidock
     ports:
-     - "8000:5000"
-    environment:
-      ENV: DEV 
-    volumes:
-      - ./identidock/app:/app
+      - "9090:9090"
 
   dnmonster:
     build: dnmonster
 
   redis:
-    image: redis:7
+    image: cgr.dev/chainguard/redis
