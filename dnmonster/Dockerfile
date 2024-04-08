@@ -25,4 +25,4 @@ COPY --from=build /usr/src/app /app
 
 EXPOSE 8080
 ENTRYPOINT ["tini", "--" ]
-CMD [ "npm", "start" ]
+CMD [ "node", "server.js" ]
