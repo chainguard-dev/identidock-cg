@@ -4,7 +4,7 @@
   "description": "Node server for KevinGaudin's monsterids",
   "main": "./src/server.js",
   "dependencies": {
-    "express": "~4.18.3",
+    "express": "~4.19.2",
     "canvas": "~2.11.2",
     "seedrandom": "~3.0.5"
   },
