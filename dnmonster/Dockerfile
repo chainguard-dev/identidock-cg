@@ -1,10 +1,11 @@
-FROM cgr.dev/chainguard/node:latest-dev as build
+FROM cgr.dev/chainguard/node:latest-dev AS build
 
 USER root
 
 RUN apk update && apk add \
-     tini cairo-dev libjpeg-turbo-dev pango-dev giflib-dev \
-     librsvg-dev glib-dev harfbuzz-dev fribidi-dev expat-dev libxft-dev
+    cairo-dev libjpeg-turbo-dev pango-dev giflib-dev python3 make gcc \
+    librsvg-dev glib-dev harfbuzz-dev fribidi-dev expat-dev libxft-dev \
+    libfontconfig1
 
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
